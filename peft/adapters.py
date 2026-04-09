@@ -110,9 +110,10 @@ class DoRALinear(nn.Module):
 
     in_f = base_linear.in_features
     out_f = base_linear.out_features
+    dev = base_linear.weight.device
 
-    self.lora_A = nn.Parameter(torch.empty(in_f, rank))
-    self.lora_B = nn.Parameter(torch.zeros(rank, out_f))
+    self.lora_A = nn.Parameter(torch.empty(in_f, rank, device=dev))
+    self.lora_B = nn.Parameter(torch.zeros(rank, out_f, device=dev))
     nn.init.kaiming_uniform_(self.lora_A, a=math.sqrt(5))
 
     # Magnitude vector — initialised from pretrained column norms.
@@ -272,7 +273,8 @@ def load_adapter_weights(model: nn.Module, path: str) -> None:
   The model must already have adapters injected (via ``inject_adapters``)
   before calling this function.
   """
-  tensors = load_file(path, device="cpu")
+  device = str(next(model.parameters()).device)
+  tensors = load_file(path, device=device)
   trainable = {n for n, p in model.named_parameters() if p.requires_grad}
   missing = trainable - set(tensors.keys())
   if missing:

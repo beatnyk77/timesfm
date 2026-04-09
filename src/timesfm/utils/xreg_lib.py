@@ -509,9 +509,9 @@ class BatchedInContextXRegLinear(BatchedInContextXRegBase):
           @ x_tr_j.T
           @ y_tr_j
         )
-        outputs.append(np.array(x_te_j @ beta_hat))
+        outputs.append(np.array(x_te_j @ beta_hat)[:tel])
         if debug_info:
-          outputs_context.append(np.array(x_tr_raw_j @ beta_hat))
+          outputs_context.append(np.array(x_tr_raw_j @ beta_hat)[:trl])
 
         train_idx += trl
         test_idx += tel
